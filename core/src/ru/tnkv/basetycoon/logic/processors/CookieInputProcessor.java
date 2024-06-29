@@ -20,7 +20,7 @@ public class CookieInputProcessor implements InputProcessor {
         }
 
         if(GameScreen.upgradeAutoSprite.getBoundingRectangle().contains(tempVector.x, tempVector.y)) {
-            actionPrice = MemoryManager.getAutoClicker() * 10;
+            actionPrice = Math.max(MemoryManager.getAutoClicker() * 10, 10);
             if (actionPrice > MemoryManager.getCookies()) {
                 return false;
             }

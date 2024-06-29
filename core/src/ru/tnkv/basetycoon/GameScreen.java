@@ -1,7 +1,5 @@
 package ru.tnkv.basetycoon;
 
-import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.DEFAULT_CHARS;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
@@ -20,7 +18,6 @@ import ru.tnkv.basetycoon.logic.MemoryManager;
 import ru.tnkv.basetycoon.logic.processors.CookieInputProcessor;
 
 public class GameScreen implements Screen {
-    public final String characters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя1234567890" + DEFAULT_CHARS;
     private final Tycoon tycoon;
     private final Viewport view;
     public static Camera camera;
@@ -35,7 +32,7 @@ public class GameScreen implements Screen {
     private final GlyphLayout countFontLayout = new GlyphLayout();
 
     private final Texture cookieTexture = new Texture("cookie.png");
-
+    private final Texture upgradeTexture = new Texture("upgrade.png");
 
     public static Sprite cookieSprite;
     public static Sprite upgradeAutoSprite;
@@ -46,8 +43,7 @@ public class GameScreen implements Screen {
         this.tycoon = tycoon;
 
         this.cookieTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Nearest);
-        Texture upgradeTexture = new Texture("upgrade.png");
-        upgradeTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        this.upgradeTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         cookieSprite = new Sprite(cookieTexture);
         upgradeAutoSprite = new Sprite(upgradeTexture);
         upgradeClickSprite = new Sprite(upgradeTexture);
@@ -66,8 +62,7 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void show() {
-    }
+    public void show() {}
 
     @Override
     public void render(float delta) {
@@ -87,24 +82,9 @@ public class GameScreen implements Screen {
         cookieSprite.setSize(cookieDiameter, cookieDiameter);
         cookieSprite.draw(tycoon.batch);
 
-        upgradeAutoSprite.setBounds(
-                camera.position.x - (buttonWidth / 2),
-                camera.position.y - (cookieDiameter) - (buttonWidth / 8),
-                buttonWidth,
-                buttonWidth / 4
-        );
-        upgradeAutoSprite.draw(tycoon.batch);
-
-        buttonFont.draw(
-                tycoon.batch,
-                "АвтоКликер\nДоход: " + MemoryManager.getAutoClicker() + " \nУлучшить за: " + MemoryManager.getAutoClicker() * 10,
-                camera.position.x - (buttonWidth / 2) + (buttonWidth / 3),
-                camera.position.y - (cookieDiameter) + buttonWidth / 16
-        );
-
         upgradeClickSprite.setBounds(
                 camera.position.x - (buttonWidth / 2),
-                camera.position.y - (cookieDiameter * 3 / 2) - (buttonWidth / 8),
+                camera.position.y - (cookieDiameter) - (buttonWidth / 8),
                 buttonWidth,
                 buttonWidth / 4
         );
@@ -112,7 +92,22 @@ public class GameScreen implements Screen {
 
         buttonFont.draw(
                 tycoon.batch,
-                "КликБустер\nДоход: " + MemoryManager.getBooster() + " \nУлучшить за: " + MemoryManager.getBooster() * 10,
+                "Улучшение клика\nДоход: " + MemoryManager.getBooster() + " \nУлучшить за: " + MemoryManager.getBooster() * 10,
+                camera.position.x - (buttonWidth / 2) + (buttonWidth / 3),
+                camera.position.y - (cookieDiameter) + buttonWidth / 16
+        );
+
+        upgradeAutoSprite.setBounds(
+                camera.position.x - (buttonWidth / 2),
+                camera.position.y - (cookieDiameter * 3 / 2) - (buttonWidth / 8),
+                buttonWidth,
+                buttonWidth / 4
+        );
+        upgradeAutoSprite.draw(tycoon.batch);
+
+        buttonFont.draw(
+                tycoon.batch,
+                "Авто-Кликер\nДоход: " + MemoryManager.getAutoClicker() + " \nУлучшить за: " + Math.max(MemoryManager.getAutoClicker() * 10, 10),
                 camera.position.x - (buttonWidth / 2) + (buttonWidth / 3),
                 camera.position.y - (cookieDiameter * 3 / 2) + buttonWidth / 16
         );
@@ -126,12 +121,11 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         countFontParameter.size = (int) Math.min(camera.viewportWidth, camera.viewportHeight) / 5;
         countFontParameter.color = Color.BLACK;
-        buttonFontParameter.characters = characters;
         countFont.dispose();
 
         buttonFontParameter.size = (int) (camera.viewportWidth / 1.5) / 25;
         buttonFontParameter.color = Color.BLACK;
-        buttonFontParameter.characters = characters;
+        buttonFontParameter.incremental = true;
         buttonFont.dispose();
 
         countFont = fontGenerator.generateFont(countFontParameter);
@@ -141,19 +135,19 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void pause() {
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
         cookieTexture.dispose();
+        upgradeTexture.dispose();
+        countFont.dispose();
+        buttonFont.dispose();
     }
 }
